@@ -37,10 +37,33 @@ We can process the parsed-sheet sheet generated above to generate a sequence of 
 
 ### Steps
 * Copy/paste this script into the sheet: [street_level_crime_CURL_generator_per_ward.js](https://gist.github.com/lewis-policecoder/288a3c35295b59f0d243d57433cc6619)
-* Run the script. You will be prompted for the range of rows to work on.
-* Provide a max of 1000 rows.
+* Run the script.
+* You will be prompted for the range of rows to work on.
+* Specify approximately 1000 rows to work on.
+* You will be prompted for the crime-type to fetch. 
+* Specify the crime type. If left blank, all-crime will be used.
+* See below for details of the available crime types.
+* You will be prompted for the month to fetch.
+* Specify the month. If left blank, the most recently available month will be used.
 
 The CURL commands will be generated and added to column E in the sheet.
 
-_At current time, these commands will fetch the most recent month’s worth of data - but this can be easily amended by appending &date=YYYY-MM to the querystring._
+### Available crime types
 
+The available crime types for any given month [can be listed](https://data.police.uk/docs/method/crime-categories/) through the API (eg. this response with the [latest list of crime types](https://data.police.uk/api/crime-categories)). For reference, in May 2018, they were:
+
+* all-crime = All crime
+* anti-social-behaviour = Anti-social behaviour
+* bicycle-theft = Bicycle theft
+* burglary = Burglary
+* criminal-damage-arson = Criminal damage and arson
+* drugs = Drugs
+* other-theft = Other theft
+* possession-of-weapons = Possession of weapons
+* public-order = Public order
+* robbery = Robbery
+* shoplifting = Shoplifting
+* theft-from-the-person = Theft from the person
+* vehicle-crime = Vehicle crime
+* violent-crime = Violence and sexual offences
+* other-crime = Other crime
