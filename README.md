@@ -34,3 +34,9 @@ Instructions and code for doing this are all available in the Xamarin Workbook:
 * __ward boundary processing.workbook__
 
 _Please note, at time of writing there are 9114 wards. The process of extracting crime data for a given month can take a considerable amount of time!_
+
+## Understanding crime data
+
+Please see the __street-level__ crime endpoint page at data.police.uk for the range of categories and information you can retrieve:
+
+* https://data.police.uk/docs/method/crime-street/
