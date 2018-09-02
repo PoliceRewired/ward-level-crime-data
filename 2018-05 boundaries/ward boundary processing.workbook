@@ -28,6 +28,10 @@ platforms:
 
 6. JSON files are arranged by folder per month. The folder is named: **output\_month\_YYYY\_MM**
 
+> **NB. Pressing Ctrl+R will run the entire workbook.**
+>
+> **Please be sure you have carefully configured the filename (if different) and the month you wish to process - this workbook takes a long time to complete, and there is currently no way to halt the execution of a workbook cell in Xamarin Workbooks!**
+
 ### Preparing ward boundary data
 
 Initialise source file…
