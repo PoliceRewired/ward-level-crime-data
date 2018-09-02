@@ -138,5 +138,5 @@ foreach (var ward in parsed_boundaries)
     }
 }
 
-new { Successes = successes, Failures = failures };
+object result = new { Successes = successes, Failures = failures };
 ```
