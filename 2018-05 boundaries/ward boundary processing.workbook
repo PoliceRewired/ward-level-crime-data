@@ -20,7 +20,13 @@ platforms:
 
 2. Now you may run this workbook to fetch crime data for the wards in the month specified below.
 
-3. Data is stored in JSON files, each named as: **output\_month\_<YYYY>_<MM>_area_<reference>_.json**
+3. Data is stored in JSON files in the same folder as this workbook.
+
+4. Each JSON file is named as: **output\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
+
+5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
+
+6. JSON files are arranged by folder per month. The folder is named: **output\_month\_YYYY\_MM**
 
 ### Preparing ward boundary data
 
@@ -89,7 +95,7 @@ Now prepare and execute queries for each ward…
 
 * NB. Some wards have more than one boundary - so each will have to be fetched separately.
 
-* NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its **month **parameter.
+* NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its **month **parameter.\\
 
 * The format of a filename is: **output\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
 
