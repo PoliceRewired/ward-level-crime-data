@@ -22,7 +22,7 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: **output\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
+4. Each JSON file is named as: **output\_month\_<YYYY>*<MM>area*<reference><index>.json**
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
@@ -99,9 +99,9 @@ Now prepare and execute queries for each ward…
 
 * NB. Some wards have more than one boundary - so each will have to be fetched separately.
 
-* NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its **month **parameter.\\
+* NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its \*\*month \*\*parameter.\\
 
-* The format of a filename is: **output\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
+* The format of a filename is: **output\_month\_<YYYY>*<MM>area*<reference><index>.json**
 
 * Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.
 
@@ -114,6 +114,7 @@ if (!Directory.Exists(output_folder)) { Directory.CreateDirectory(output_folder)
 
 var failures = new List<KeyValuePair<String,Exception>>();
 var successes = new List<String>();
+var skipped = new List<String>();
 
 HttpClient client = new HttpClient();
 foreach (var ward in parsed_boundaries)
@@ -123,7 +124,10 @@ foreach (var ward in parsed_boundaries)
     {
         var output_filename = $"{output_prefix}{ward.Reference}_{boundary_count++}{output_suffix}";
         var output_path = Path.Combine(output_folder, output_filename);
-        if (File.Exists(output_path)) { continue; } // skip files already retrieved
+        if (File.Exists(output_path)) { 
+            skipped.Add(output_path);
+            continue; // skip files already retrieved 
+        } 
 
         var date_string = $"{query_month.Year}-{query_month.Month.ToString("X2")}";
         var poly_string = string.Join(",", boundary.Select(c => $"{c.Longitude}:{c.Latitude}"));
@@ -148,5 +152,5 @@ foreach (var ward in parsed_boundaries)
     }
 }
 
-object result = new { Successes = successes, Failures = failures };
+object result = new { Successes = successes, Failures = failures, Skipped = skipped };
 ```
