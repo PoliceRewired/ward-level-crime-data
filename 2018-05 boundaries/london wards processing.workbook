@@ -22,11 +22,11 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: london\**month*<YYYY>\*<MM>area<reference><index>.json\*\*
+4. Each JSON file is named as: **crime\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
-6. JSON files are arranged by folder per month. The folder is named: london\*\*\_month\_YYYY\_MM\*\*
+6. JSON files are arranged by folder per month. The folder is named: **london\_month\_YYYY\_MM**
 
 > **NB. Pressing Ctrl+R will run the entire workbook.**
 >
@@ -48,7 +48,7 @@ File.Exists(london_wards_source_filename) ? "London wards found." : "London ward
 ```
 
 ```csharp
-var start_month = new DateTime(2017, 09, 01);
+var start_month = new DateTime(2016, 01, 01);
 var finish_month = new DateTime(2018, 06, 01);
 $"{finish_month.Subtract(start_month).Days / 30} months (approx)";
 ```
@@ -110,7 +110,7 @@ Now prepare and execute queries for each ward…
 
 * NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its \*\*month \*\*parameter.\\
 
-* The format of a filename is: *output\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
+* The format of a filename is: *crime\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
 
 * Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.
 
@@ -126,7 +126,7 @@ var query_month = start_month;
 do
 {
 
-    var output_prefix = $"london_month_{query_month.Year}_{query_month.Month.ToString("D2")}_area_";
+    var output_prefix = $"crime_month_{query_month.Year}_{query_month.Month.ToString("D2")}_area_";
     var output_suffix = ".json";
 
     var output_folder = $"london_month_{query_month.Year}_{query_month.Month.ToString("D2")}";
@@ -137,7 +137,7 @@ do
     var skipped = new List<String>();
 
     HttpClient client = new HttpClient();
-    foreach (var ward in parsed_london_boundaries)
+    foreach (var ward in parsed_london_boundaries.Take(50)) // UNDO!!!
     {
         int boundary_count = 0;
         foreach (var boundary in ward.Coordinates)
@@ -153,13 +153,13 @@ do
             var poly_string = string.Join(",", boundary.Select(c => $"{c.Longitude}:{c.Latitude}"));
             var values = new Dictionary<string, string>
             {
-                { "month", date_string },
-                { "poly", poly_string }
+                { "poly", poly_string },
+                //{ "date", date_string }
             };
 
             try {
                 var content = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync("https://data.police.uk/api/crimes-street/all-crime", content);
+                var response = await client.PostAsync($"https://data.police.uk/api/crimes-street/all-crime?date={date_string}", content);
                 var responseString = await response.Content.ReadAsStringAsync();
                 if (File.Exists(output_path)) { File.Delete(output_path); } // always replace if found (won't happen though)
                 await File.WriteAllTextAsync(output_path, responseString);
