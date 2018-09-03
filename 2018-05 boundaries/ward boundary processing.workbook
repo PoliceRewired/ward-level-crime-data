@@ -22,11 +22,11 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: *output\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
+4. Each JSON file is named as: UK\*_month_<YYYY>\*<MM>area<reference><index>.json\*\*
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
-6. JSON files are arranged by folder per month. The folder is named: **output\_month\_YYYY\_MM**
+6. JSON files are arranged by folder per month. The folder is named: UK**\_month\_YYYY\_MM**
 
 > **NB. Pressing Ctrl+R will run the entire workbook.**
 >
@@ -43,8 +43,8 @@ File.Exists(kml_source_filename) ? "File found." : "File not found.";
 ```
 
 ```csharp
-var query_month = new DateTime(2017, 10, 01);
-var output_prefix = $"output_month_{query_month.Year}_{query_month.Month.ToString("X2")}_area_";
+var query_month = new DateTime(2017, 04, 01);
+var output_prefix = $"UK_month_{query_month.Year}_{query_month.Month.ToString("D2")}_area_";
 var output_suffix = ".json";
 output_prefix + "*" + output_suffix;
 ```
@@ -109,7 +109,7 @@ Now prepare and execute queries for each ward…
 using System.Net.Http;
 using System.IO;
 
-var output_folder = $"output_month_{query_month.Year}_{query_month.Month.ToString("X2")}";
+var output_folder = $"UK_month_{query_month.Year}_{query_month.Month.ToString("X2")}";
 if (!Directory.Exists(output_folder)) { Directory.CreateDirectory(output_folder); }
 
 var failures = new List<KeyValuePair<String,Exception>>();
@@ -129,7 +129,7 @@ foreach (var ward in parsed_boundaries)
             continue; // skip files already retrieved 
         } 
 
-        var date_string = $"{query_month.Year}-{query_month.Month.ToString("X2")}";
+        var date_string = $"{query_month.Year}-{query_month.Month.ToString("D2")}";
         var poly_string = string.Join(",", boundary.Select(c => $"{c.Longitude}:{c.Latitude}"));
         var values = new Dictionary<string, string>
         {

@@ -1,0 +1,183 @@
+---
+packages:
+- id: SharpKml.Core
+  version: 4.0.0
+uti: com.xamarin.workbook
+id: 5eff068c-2d6c-4421-b732-de710c489c34
+title: ward boundary processing
+platforms:
+- DotNetCore
+---
+
+# London ward boundaries
+
+## … for use with [data.police.uk](https://data.police.uk "data.police.uk") API queries.
+
+### Getting started
+
+1. Download ONS ward boundaries, and place in the same folder as this workbook.\
+   Current latest ward boundaries are (provisional) from [May 2018](https://geoportal1-ons.opendata.arcgis.com/datasets/fba403b550d3456b813714bfbe7d0f0c_0 "May 2018 ONS ward boundaries")  (~500Mb)
+
+2. Now you may run this workbook to fetch crime data for the wards in the month specified below.
+
+3. Data is stored in JSON files in the same folder as this workbook.
+
+4. Each JSON file is named as: london\**month*<YYYY>\*<MM>area<reference><index>.json\*\*
+
+5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
+
+6. JSON files are arranged by folder per month. The folder is named: london\*\*\_month\_YYYY\_MM\*\*
+
+> **NB. Pressing Ctrl+R will run the entire workbook.**
+>
+> **Please be sure you have carefully configured the filename (if different) and the month you wish to process - this workbook takes a long time to complete, and there is currently no way to halt the execution of a workbook cell in Xamarin Workbooks!**
+
+### Preparing ward boundary data
+
+Initialise source file…
+
+```csharp
+using System.IO;
+var kml_source_filename = "Wards_May_2018_UK_BFC.kml";
+File.Exists(kml_source_filename) ? "File found." : "File not found.";
+```
+
+```csharp
+var london_wards_source_filename = "london_ward_ids_only.csv";
+File.Exists(london_wards_source_filename) ? "London wards found." : "London ward ids missing.";
+```
+
+```csharp
+var start_month = new DateTime(2017, 09, 01);
+var finish_month = new DateTime(2018, 06, 01);
+$"{finish_month.Subtract(start_month).Days / 30} months (approx)";
+```
+
+```csharp
+var london_ward_ids = File.ReadAllLines(london_wards_source_filename);
+$"Found {london_ward_ids.Count()} wards to process.";
+```
+
+Load the source KML…
+
+```csharp
+#r "SharpKml.Core"
+using SharpKml.Engine;
+var kml_source_stream = File.Open(kml_source_filename, FileMode.Open);
+var kml_source = KmlFile.Load(kml_source_stream);
+kml_source == null ? "Unable to open file." : "KML ready.";
+```
+
+Fetch key parameters from the Placemarks as a collection of NameAndBoundary…
+
+```csharp
+using System.Linq;
+using SharpKml.Dom;
+public class NameAndBoundary
+{
+    public NameAndBoundary(Placemark placemark) {
+        this.Guid = Guid.NewGuid();
+        this.Placemark = placemark;
+    }
+    public Guid Guid { get; private set; }
+    public Placemark Placemark { get; private set; }
+    public string Reference { get { return Placemark.ExtendedData.SchemaData.Single().SimpleData.Single(n => n.Name == "wd18cd").Text; } }
+    public string Name { get { return Placemark.ExtendedData.SchemaData.Single().SimpleData.Single(n => n.Name == "wd18nm").Text; } }
+    public IEnumerable<CoordinateCollection> Coordinates { get { return Placemark.Flatten().OfType<CoordinateCollection>(); } }
+}
+```
+
+```csharp
+using System.Linq;
+using SharpKml.Dom;
+Kml kml = kml_source.Root as Kml;
+var placemarks = kml.Flatten().OfType<Placemark>();
+$"Found {placemarks.Count()} Placemarks";
+```
+
+Prepare name and boundary data…
+
+```csharp
+using System.Linq;
+var parsed_london_boundaries = placemarks.Select(p => new NameAndBoundary(p) ).Where(nb => london_ward_ids.Contains(nb.Reference));
+```
+
+### Retrieve crime data per ward
+
+Now prepare and execute queries for each ward…
+
+* NB. Some wards have more than one boundary - so each will have to be fetched separately.
+
+* NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its \*\*month \*\*parameter.\\
+
+* The format of a filename is: *output\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
+
+* Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.
+
+```csharp
+using System.Net.Http;
+using System.IO;
+
+
+var results = new List<object>();
+
+var query_month = start_month;
+
+do
+{
+
+    var output_prefix = $"london_month_{query_month.Year}_{query_month.Month.ToString("D2")}_area_";
+    var output_suffix = ".json";
+
+    var output_folder = $"london_month_{query_month.Year}_{query_month.Month.ToString("D2")}";
+    if (!Directory.Exists(output_folder)) { Directory.CreateDirectory(output_folder); }
+
+    var failures = new List<KeyValuePair<String,Exception>>();
+    var successes = new List<String>();
+    var skipped = new List<String>();
+
+    HttpClient client = new HttpClient();
+    foreach (var ward in parsed_london_boundaries)
+    {
+        int boundary_count = 0;
+        foreach (var boundary in ward.Coordinates)
+        {
+            var output_filename = $"{output_prefix}{ward.Reference}_{boundary_count++}{output_suffix}";
+            var output_path = Path.Combine(output_folder, output_filename);
+            if (File.Exists(output_path)) { 
+                skipped.Add(output_path);
+                continue; // skip files already retrieved 
+            } 
+
+            var date_string = $"{query_month.Year}-{query_month.Month.ToString("D2")}";
+            var poly_string = string.Join(",", boundary.Select(c => $"{c.Longitude}:{c.Latitude}"));
+            var values = new Dictionary<string, string>
+            {
+                { "month", date_string },
+                { "poly", poly_string }
+            };
+
+            try {
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync("https://data.police.uk/api/crimes-street/all-crime", content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (File.Exists(output_path)) { File.Delete(output_path); } // always replace if found (won't happen though)
+                await File.WriteAllTextAsync(output_path, responseString);
+                successes.Add(output_path);
+            } 
+            catch (Exception e) 
+            {
+                failures.Add(new KeyValuePair<string, Exception>(output_path, e));
+            }
+        }
+    }
+
+    object result = new { Month = query_month, Successes = successes, Failures = failures, Skipped = skipped };
+    results.Add(result);
+
+    query_month = query_month.AddMonths(1);
+
+} while (query_month <= finish_month);
+
+results;
+```
