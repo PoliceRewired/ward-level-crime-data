@@ -22,7 +22,7 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: **crime\_month\_<YYYY>_<MM>_area_<reference>_<index>.json**
+4. Each JSON file is named as: **crime\_month\_<YYYY>*<MM>area*<reference><index>.json**
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
@@ -137,7 +137,7 @@ do
     var skipped = new List<String>();
 
     HttpClient client = new HttpClient();
-    foreach (var ward in parsed_london_boundaries.Take(50)) // UNDO!!!
+    foreach (var ward in parsed_london_boundaries) // UNDO!!!
     {
         int boundary_count = 0;
         foreach (var boundary in ward.Coordinates)
