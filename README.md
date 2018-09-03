@@ -14,18 +14,27 @@ Boundaries were updated (provisionally) in May 2018, so we'll use the latest bou
 
 * [May 2018 boundaries from ONS](https://geoportal1-ons.opendata.arcgis.com/datasets/fba403b550d3456b813714bfbe7d0f0c_0) (~500Mb)
 
-Download and place the KML file for these boundaries in the same directory as __ward boundary processing.workbook__.
+Download and place the KML file for these boundaries in the __2018-05 boundaries__ folder.
+
+## Repository structure
+
+* __READ.md__ - this README.
+* __.gitignore__ - mainly to prevent accidental inclusion of large KML files in this repository.
+* __ward identities/Wards - wards.csv__ - comma separated ward identity data (id, ward name, ward area)
+* __ward identities/Wards - wards.tsv__ - tab separated ward identity data (id, ward name, ward area)
+* __2018-05 boundaries/london_ward_ids_only.csv__ - a list of ids (one per line) for the wards in London (ostensibly CSV).
+* __2018-05 boundaries/ward boundary processing.workbook__ - fetches crime data for the whole of the UK for a given month.
+* __2018-05 boundaries/london wards processing.workbook__ - fetches crime data for all London wards across a range of months.
 
 ## Retrieving crime data per ward
 
-The Xamarin Workbooks inside the __2018-05 boundaries__ folder manage retrieval of crime data:
+The Xamarin Workbooks inside the __2018-05 boundaries__ folder manage retrieval of crime data.
 
-* __ward boundary processing.workbook__ - fetches crime data for the whole of the UK for a given month.
-* __london wards processing.workbook__ - fetches crime data for all London wards across a range of months.
+To fetch your own subset of the data, open the appropriate workbook, update the initial variables, and use Ctrl+R to run.
 
-_Please note, at time of writing there are 9114 wards across the UK with ~13000 boundaries defined (as some wards have multiple boundaries). The process of extracting crime data for a given month can take a considerable amount of time!_
+__Please note, at time of writing there are 9114 wards across the UK with ~13000 boundaries defined (as some wards have multiple boundaries). The process of extracting crime data for a given month can take a considerable amount of time!__
 
-### A little about how they work
+### Notes on ward boundaries
 
 Our ward boundaries are wrapped in KML and not in the format we'll need to generate requests to the data.police.uk APIs.
 
