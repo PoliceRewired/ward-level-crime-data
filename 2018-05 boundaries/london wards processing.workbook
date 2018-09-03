@@ -22,7 +22,7 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: **crime\_month\_<YYYY>*<MM>area*<reference><index>.json**
+4. Each JSON file is named as: *crime\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
@@ -48,7 +48,7 @@ File.Exists(london_wards_source_filename) ? "London wards found." : "London ward
 ```
 
 ```csharp
-var start_month = new DateTime(2016, 01, 01);
+var start_month = new DateTime(2017, 08, 01);
 var finish_month = new DateTime(2018, 06, 01);
 $"{finish_month.Subtract(start_month).Days / 30} months (approx)";
 ```
