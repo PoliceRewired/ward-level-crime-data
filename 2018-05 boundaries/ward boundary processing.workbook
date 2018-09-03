@@ -22,7 +22,7 @@ platforms:
 
 3. Data is stored in JSON files in the same folder as this workbook.
 
-4. Each JSON file is named as: **output\_month\_<YYYY>*<MM>area*<reference><index>.json**
+4. Each JSON file is named as: *output\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
 
 5. *Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.*
 
@@ -43,7 +43,7 @@ File.Exists(kml_source_filename) ? "File found." : "File not found.";
 ```
 
 ```csharp
-var query_month = new DateTime(2018, 01, 01);
+var query_month = new DateTime(2017, 10, 01);
 var output_prefix = $"output_month_{query_month.Year}_{query_month.Month.ToString("X2")}_area_";
 var output_suffix = ".json";
 output_prefix + "*" + output_suffix;
@@ -101,7 +101,7 @@ Now prepare and execute queries for each ward…
 
 * NB. The data.police.uk takes comma separated **LNG:LAT** pairs (the counterintuitive way around!) in its **poly** parameter, and **YYYY-MM** in its \*\*month \*\*parameter.\\
 
-* The format of a filename is: **output\_month\_<YYYY>*<MM>area*<reference><index>.json**
+* The format of a filename is: *output\_month\_<YYYY>*<MM>area<reference><index>.json\*\*
 
 * Index is usually 0, but some wards apparently have multiple boundary definitions, and so are represented by more than 1 json output.
 
