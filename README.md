@@ -4,11 +4,24 @@ Voting ward boundaries are slightly different from policing ward boundaries, for
 
 This process allows us to generate boundaries we can pass to data.police.uk to collect a cut of crime data per ward per month.
 
-You will need to install:
+## Just here for the data?
 
-* [Xamarin Workbooks](https://developer.xamarin.com/workbooks/)
+Take a look inside the __2018-05 boundaries__ folder - you'll find subfolders for the data that has been retrieved.
 
-## Fetch ward boundaries
+* __london_month_YYYY_MM__ - a folder for London data. JSON files contain crime data for each London ward in the given month.
+* __UK_month_YYYY_MM__ - a folder for UK data. JSON files contain crime data for every UK ward in the given month.
+
+## Repository structure
+
+* __/READ.md__ - this README.
+* __/.gitignore__ - mainly to prevent accidental inclusion of large KML files in this repository.
+* __/ward identities/Wards - wards.csv__ - comma separated ward identity data (id, ward name, ward area)
+* __/ward identities/Wards - wards.tsv__ - tab separated ward identity data (id, ward name, ward area)
+* __/2018-05 boundaries/london_ward_ids_only.csv__ - a list of ids (one per line) for the wards in London (ostensibly CSV).
+* __/2018-05 boundaries/ward boundary processing.workbook__ - fetches crime data for the whole of the UK for a given month.
+* __/2018-05 boundaries/london wards processing.workbook__ - fetches crime data for all London wards across a range of months.
+
+## Fetching ward boundaries
 
 Boundaries were updated (provisionally) in May 2018, so we'll use the latest boundaries from ONS.
 
@@ -16,17 +29,11 @@ Boundaries were updated (provisionally) in May 2018, so we'll use the latest bou
 
 Download and place the KML file for these boundaries in the __2018-05 boundaries__ folder.
 
-## Repository structure
-
-* __READ.md__ - this README.
-* __.gitignore__ - mainly to prevent accidental inclusion of large KML files in this repository.
-* __ward identities/Wards - wards.csv__ - comma separated ward identity data (id, ward name, ward area)
-* __ward identities/Wards - wards.tsv__ - tab separated ward identity data (id, ward name, ward area)
-* __2018-05 boundaries/london_ward_ids_only.csv__ - a list of ids (one per line) for the wards in London (ostensibly CSV).
-* __2018-05 boundaries/ward boundary processing.workbook__ - fetches crime data for the whole of the UK for a given month.
-* __2018-05 boundaries/london wards processing.workbook__ - fetches crime data for all London wards across a range of months.
-
 ## Retrieving crime data per ward
+
+You will need to install:
+
+* [Xamarin Workbooks](https://developer.xamarin.com/workbooks/)
 
 The Xamarin Workbooks inside the __2018-05 boundaries__ folder manage retrieval of crime data.
 
